@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jalaram Restaurant — Authentic Flavours of Gujarat, Kathiyawad & Punjab in Rajkot</title>
+<meta name="description" content="Jalaram Restaurant, Rajkot. Authentic Gujarati, Kathiyawadi, Punjabi & street-style fast food, hand-crafted since 1995." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #0E0A06;
+    --bg-2: #1A120B;
+    --surface: #221710;
+    --surface-2: #2D1F15;
+    --fg: #FFF5E1;
+    --fg-muted: rgba(255, 245, 225, 0.6);
+    --fg-dim: rgba(255, 245, 225, 0.35);
+    --saffron: #FF6B1A;
+    --saffron-bright: #FF8534;
+    --turmeric: #F4B82E;
+    --crimson: #D62828;
+    --emerald: #2A7F3E;
+    --cream: #FFF5E1;
+    --border: rgba(244, 184, 46, 0.18);
+    --border-strong: rgba(244, 184, 46, 0.35);
+    --card: rgba(255, 245, 225, 0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    overflow-x: hidden;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (min-width: 1024px) {
+    body, a, button, .interactive { cursor: none; }
+  }
+  .font-display { font-family: 'Fraunces', serif; font-variation-settings: "opsz" 144; }
+
+  /* ===== Custom cursor ===== */
+  .cursor-dot, .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    border-radius: 50%; mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    background: var(--turmeric);
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, opacity 0.2s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--turmeric);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
+  }
+  .cursor-hover .cursor-dot { width: 0; height: 0; }
+  .cursor-hover .cursor-ring {
+    width: 64px; height: 64px;
+    border-color: var(--saffron);
+    background: rgba(255, 107, 26, 0.1);
+  }
+  @media (max-width: 1023px) { .cursor-dot, .cursor-ring { display: none; } }
+
+  /* ===== Loader ===== */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 99999;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loader.done { opacity: 0; visibility: hidden; }
+  .loader-text {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 900; font-style: italic;
+    color: var(--cream); letter-spacing: -0.02em;
+  }
+  .loader-bar {
+    margin-top: 1.5rem; width: 220px; height: 2px;
+    background: rgba(255, 245, 225, 0.1);
+    overflow: hidden; border-radius: 2px;
+  }
+  .loader-bar::after {
+    content: ''; display: block; width: 30%; height: 100%;
+    background: linear-gradient(90deg, var(--saffron), var(--turmeric));
+    animation: load 1.4s ease-in-out infinite;
+  }
+  @keyframes load { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
+
+  /* ===== Hero canvas ===== */
+  #hero-canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; z-index: 1;
+  }
+
+  /* ===== Navbar ===== */
+  .nav-blur {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(14, 10, 6, 0.7);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ===== Floating hero cards ===== */
+  .float-card {
+    position: absolute;
+    border-radius: 24px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--border);
+  }
+  @keyframes float-1 { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-22px) rotate(-3deg); } }
+  @keyframes float-2 { 0%,100% { transform: translateY(0) rotate(8deg); } 50% { transform: translateY(-30px) rotate(5deg); } }
+  @keyframes float-3 { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-15px) rotate(0deg); } }
+  .float-anim-1 { animation: float-1 6s ease-in-out infinite; }
+  .float-anim-2 { animation: float-2 7.5s ease-in-out infinite; }
+  .float-anim-3 { animation: float-3 8s ease-in-out infinite; }
+
+  /* ===== Buttons ===== */
+  .btn-primary {
+    background: var(--saffron); color: var(--bg);
+    padding: 14px 28px; border-radius: 100px;
+    font-weight: 600; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--turmeric), var(--saffron));
+    transform: translateX(-101%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span, .btn-primary i { position: relative; z-index: 1; }
+  .btn-ghost {
+    background: transparent; color: var(--fg);
+    padding: 14px 28px; border-radius: 100px;
+    font-weight: 500; border: 1px solid var(--border-strong);
+    transition: all 0.3s;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .btn-ghost:hover { background: var(--card); border-color: var(--turmeric); }
+
+  /* ===== Section tag ===== */
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 6px 16px 6px 6px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 100px; font-size: 0.7rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--turmeric); font-weight: 500;
+  }
+  .section-tag .dot {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--saffron); display: grid; place-items: center;
+    color: var(--bg); font-size: 0.65rem; font-weight: 700;
+  }
+
+  /* ===== Reveal ===== */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  /* ===== Tilt card ===== */
+  .tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  /* ===== Marquee ===== */
+  .marquee {
+    display: flex; overflow: hidden;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 22px 0; background: var(--bg-2);
+  }
+  .marquee-track {
+    display: flex; gap: 60px;
+    animation: marquee 32s linear infinite;
+    flex-shrink: 0; padding-right: 60px;
+  }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .marquee-item {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-style: italic; color: var(--cream);
+    display: flex; align-items: center; gap: 60px;
+    white-space: nowrap;
+  }
+  .marquee-item .star { color: var(--saffron); font-style: normal; }
+
+  /* ===== Cuisine card ===== */
+  .cuisine-card {
+    position: relative;
+    padding: 36px 28px;
+    border-radius: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+  }
+  .cuisine-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 107, 26, 0.18), transparent 50%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .cuisine-card:hover::before { opacity: 1; }
+  .cuisine-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-6px);
+  }
+
+  /* ===== Dish card ===== */
+  .dish-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dish-card:hover { border-color: var(--turmeric); transform: translateY(-8px); }
+  .dish-card .dish-image { aspect-ratio: 4/5; overflow: hidden; position: relative; }
+  .dish-card .dish-image img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dish-card:hover .dish-image img { transform: scale(1.08); }
+
+  .num-badge {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: 0.8rem; color: var(--turmeric); letter-spacing: 0.1em;
+  }
+
+  /* ===== Menu tabs ===== */
+  .menu-tab {
+    padding: 12px 24px; border-radius: 100px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--fg-muted); font-weight: 500;
+    transition: all 0.3s; white-space: nowrap;
+  }
+  .menu-tab.active {
+    background: var(--saffron); color: var(--bg);
+    border-color: var(--saffron);
+  }
+  .menu-tab:not(.active):hover { color: var(--fg); border-color: var(--border-strong); }
+
+  #menu-content { transition: opacity 0.3s ease, transform 0.3s ease; }
+  .menu-item-row {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(244, 184, 46, 0.08);
+    transition: border-color 0.3s, padding-left 0.3s;
+  }
+  .menu-item-row:hover { border-bottom-color: rgba(244, 184, 46, 0.3); padding-left: 8px; }
+
+  /* ===== Gallery ===== */
+  .gallery-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+  .gallery-item {
+    position: relative; overflow: hidden;
+    border-radius: 16px;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .gallery-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .gallery-item:hover img { transform: scale(1.12); }
+
+  /* ===== Testimonials ===== */
+  .testimonial-card {
+    padding: 30px; border-radius: 24px;
+    background: var(--card); border: 1px solid var(--border);
+    transition: all 0.4s;
+  }
+  .testimonial-card:hover {
+    border-color: var(--border-strong);
+    background: rgba(255, 245, 225, 0.06);
+    transform: translateY(-4px);
+  }
+
+  /* ===== Misc ===== */
+  .rotating-badge { animation: rotate 22s linear infinite; }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+
+  .glow {
+    position: absolute; border-radius: 50%;
+    filter: blur(90px); opacity: 0.45;
+    pointer-events: none;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--saffron); }
+  ::selection { background: var(--saffron); color: var(--bg); }
+
+  .noise::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.05; pointer-events: none; mix-blend-mode: overlay;
+  }
+
+  .spice-pattern {
+    background-image: radial-gradient(circle, rgba(244, 184, 46, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Floating WhatsApp button */
+  .float-cta {
+    position: fixed; bottom: 24px; right: 24px;
+    z-index: 50;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--saffron);
+    color: var(--bg);
+    display: grid; place-items: center;
+    font-size: 1.25rem;
+    box-shadow: 0 12px 40px -8px rgba(255, 107, 26, 0.6);
+    transition: all 0.3s;
+  }
+  .float-cta:hover { transform: scale(1.1); background: var(--turmeric); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* ===== Food Carousel ===== */
+  .food-carousel {
+    position: relative;
+    z-index: 1;
+    height: 70vh;
+    min-height: 500px;
+    max-height: 700px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .carousel-item {
+    --items: 4;
+    --width: clamp(200px, 25vw, 350px);
+    --height: clamp(280px, 35vw, 450px);
+    --x: calc(var(--active) * 600%);
+    --y: calc(var(--active) * 150%);
+    --rot: calc(var(--active) * 90deg);
+    --opacity: calc(var(--zIndex) / var(--items) * 2.5 - 1.5);
+    overflow: hidden;
+    position: absolute;
+    z-index: var(--zIndex);
+    width: var(--width);
+    height: var(--height);
+    margin: calc(var(--height) * -0.5) 0 0 calc(var(--width) * -0.5);
+    border-radius: 20px;
+    top: 50%;
+    left: 50%;
+    user-select: none;
+    transform-origin: 0% 100%;
+    box-shadow: 0 20px 60px 20px rgba(0, 0, 0, 0.6);
+    background: var(--surface);
+    pointer-events: all;
+    transform: translate(var(--x), var(--y)) rotate(var(--rot));
+    transition: transform 0.8s cubic-bezier(0, 0.02, 0, 1);
+    cursor: pointer;
+  }
+
+  .carousel-item:hover {
+    box-shadow: 0 25px 80px 25px rgba(255, 107, 26, 0.15);
+  }
+
+  .carousel-box {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.8s cubic-bezier(0, 0.02, 0, 1);
+    opacity: var(--opacity);
+  }
+
+  .carousel-box::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(14, 10, 6, 0.4), rgba(14, 10, 6, 0) 30%, rgba(14, 10, 6, 0) 50%, rgba(14, 10, 6, 0.7));
+    pointer-events: none;
+  }
+
+  .carousel-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    transition: transform 0.8s cubic-bezier(0, 0.02, 0, 1);
+  }
+
+  .carousel-item:hover .carousel-box img {
+    transform: scale(1.05);
+  }
+
+  .carousel-title {
+    position: absolute;
+    z-index: 3;
+    color: var(--fg);
+    bottom: 24px;
+    left: 24px;
+    transition: opacity 0.8s cubic-bezier(0, 0.02, 0, 1);
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+
+  .carousel-num {
+    position: absolute;
+    z-index: 3;
+    color: var(--turmeric);
+    top: 16px;
+    left: 24px;
+    transition: opacity 0.8s cubic-bezier(0, 0.02, 0, 1);
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 300;
+    pointer-events: none;
+  }
+
+  .carousel-price {
+    position: absolute;
+    z-index: 3;
+    color: var(--saffron);
+    bottom: 24px;
+    right: 24px;
+    transition: opacity 0.8s cubic-bezier(0, 0.02, 0, 1);
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .carousel-cursor {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    --size: 50px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    border: 1px solid rgba(244, 184, 46, 0.3);
+    margin: calc(var(--size) * -0.5) 0 0 calc(var(--size) * -0.5);
+    transition: transform 0.85s cubic-bezier(0, 0.02, 0, 1);
+    display: none;
+    pointer-events: none;
+  }
+
+  .carousel-cursor2 {
+    --size: 4px;
+    background: var(--turmeric);
+    border: none;
+    transition-duration: 0.7s;
+  }
+
+  @media (pointer: fine) {
+    .carousel-cursor {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .food-carousel {
+      height: 60vh;
+      min-height: 400px;
+    }
+    .carousel-item {
+      --width: clamp(160px, 35vw, 220px);
+      --height: clamp(220px, 45vw, 300px);
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- ===== Loader ===== -->
+  <div id="loader">
+    <div class="loader-text">Jalaram</div>
+    <div class="loader-bar"></div>
+    <div class="text-[10px] mt-4 text-amber-200/40 tracking-[0.3em] uppercase">Preparing your table</div>
+  </div>
+
+  <!-- ===== Custom cursor ===== -->
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+    <div class="max-w-7xl mx-auto px-5 lg:px-10 h-20 flex items-center justify-between">
+      <a href="#hero" class="flex items-center gap-3 interactive">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center shrink-0">
+          <span class="font-display font-black text-stone-900 text-xl italic">J</span>
+        </div>
+        <div class="hidden sm:block">
+          <div class="font-display font-black text-lg leading-none">Jalaram</div>
+          <div class="text-[9px] tracking-[0.28em] text-amber-300/60 uppercase mt-1">Restaurant · Rajkot</div>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm">
+        <a href="#cuisines" class="interactive text-stone-300 hover:text-amber-300 transition">Cuisines</a>
+        <a href="#signature" class="interactive text-stone-300 hover:text-amber-300 transition">Signature</a>
+        <a href="#menu" class="interactive text-stone-300 hover:text-amber-300 transition">Menu</a>
+        <a href="#about" class="interactive text-stone-300 hover:text-amber-300 transition">Our Story</a>
+        <a href="#visit" class="interactive text-stone-300 hover:text-amber-300 transition">Visit</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="cart-pill" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-stone-900/60 border border-amber-500/20 text-sm">
+          <i class="fa-solid fa-bag-shopping text-amber-400 text-xs"></i>
+          <span class="text-xs text-stone-400">Order</span>
+          <span id="cart-count" class="font-bold text-amber-400">0</span>
+        </div>
+        <a href="#visit" class="btn-primary interactive text-sm py-2.5 px-5">
+          <span>Reserve</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== Hero ===== -->
+  <section id="hero" class="relative min-h-screen pt-20 overflow-hidden noise">
+    <canvas id="hero-canvas"></canvas>
+    <div class="glow w-[600px] h-[600px] bg-orange-600 -top-40 -left-40"></div>
+    <div class="glow w-[500px] h-[500px] bg-amber-500 top-1/2 -right-40"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-5 lg:px-10 pt-12 lg:pt-20 pb-32">
+      <div class="grid lg:grid-cols-12 gap-10 items-center min-h-[80vh]">
+        <div class="lg:col-span-7 relative">
+          <div class="section-tag mb-8 reveal">
+            <span class="dot"><i class="fa-solid fa-pepper-hot text-[10px]"></i></span>
+            <span>Since 1995 · Rajkot</span>
+          </div>
+
+          <h1 class="font-display font-black leading-[0.9] tracking-tight reveal" style="font-size: clamp(3rem, 8.5vw, 7rem);">
+            The Taste of <br />
+            <span class="italic font-light text-amber-400">Saurashtra,</span><br />
+            on Every <span class="relative inline-block">
+              <span class="relative z-10">Plate.</span>
+              <svg class="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none" preserveAspectRatio="none">
+                <path d="M2 8C50 2 150 2 198 8" stroke="#FF6B1A" stroke-width="4" stroke-linecap="round" />
+              </svg>
+            </span>
+          </h1>
+
+          <p class="mt-8 text-lg lg:text-xl text-stone-300 max-w-xl reveal leading-relaxed">
+            Authentic Gujarati, Kathiyawadi, Punjabi and street-style fast food — crafted with hand-pounded spices, pure A2 ghee and three decades of love, in the heart of Rajkot.
+          </p>
+
+          <div class="mt-10 flex flex-wrap gap-4 reveal">
+            <a href="#menu" class="btn-primary interactive">
+              <span>Explore Menu</span>
+              <i class="fa-solid fa-utensils"></i>
+            </a>
+            <a href="#visit" class="btn-ghost interactive">
+              <i class="fa-solid fa-location-dot text-amber-400"></i>
+              <span>Find Us</span>
+            </a>
+          </div>
+
+          <div class="mt-16 grid grid-cols-3 gap-6 max-w-lg reveal">
+            <div>
+              <div class="font-display text-3xl lg:text-4xl font-black text-amber-400" data-count="28">0</div>
+              <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Years Serving</div>
+            </div>
+            <div>
+              <div class="font-display text-3xl lg:text-4xl font-black text-amber-400" data-count="120">0</div>
+              <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Dishes Crafted</div>
+            </div>
+            <div>
+              <div class="font-display text-3xl lg:text-4xl font-black text-amber-400">4.7<span class="text-amber-500/40">★</span></div>
+              <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Google Rated</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero visual stack -->
+        <div class="lg:col-span-5 relative h-[500px] lg:h-[620px] hidden md:block">
+          <!-- Rotating badge -->
+          <div class="absolute -top-4 -left-4 w-32 h-32 z-20">
+            <svg viewBox="0 0 100 100" class="rotating-badge w-full h-full">
+              <defs>
+                <path id="circle-path" d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" />
+              </defs>
+              <text fill="#F4B82E" font-size="8.5" font-family="Outfit" font-weight="500" letter-spacing="2">
+                <textPath href="#circle-path">PURE VEG · FRESHLY MADE · SINCE 1995 · </textPath>
+              </text>
+            </svg>
+            <div class="absolute inset-0 grid place-items-center">
+              <i class="fa-solid fa-leaf text-amber-400 text-2xl"></i>
+            </div>
+          </div>
+
+          <!-- Main dish -->
+          <div class="float-card float-anim-1 top-8 right-8 w-64 h-80 z-10">
+            <img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80" alt="Signature paneer dish" class="w-full h-full object-cover" loading="eager" />
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/20 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+              <div class="text-[10px] text-amber-300 uppercase tracking-widest mb-1">Signature</div>
+              <div class="font-display font-bold text-lg text-white">Paneer Butter Masala</div>
+            </div>
+          </div>
+
+          <!-- Thali card -->
+          <div class="float-card float-anim-2 bottom-0 left-0 w-56 h-56 z-20">
+            <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=500&q=80" alt="Gujarati thali" class="w-full h-full object-cover" loading="eager" />
+            <div class="absolute inset-0 bg-gradient-to-t from-orange-900/80 to-transparent"></div>
+            <div class="absolute top-3 right-3 bg-amber-400 text-stone-900 text-[10px] font-bold px-2 py-1 rounded-full">★ 4.9</div>
+          </div>
+
+          <!-- Street food -->
+          <div class="float-card float-anim-3 bottom-32 right-0 w-44 h-44 z-30">
+            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" alt="Street food" class="w-full h-full object-cover" loading="eager" />
+          </div>
+
+          <!-- Price tag -->
+          <div class="float-card float-anim-2 top-40 left-0 px-5 py-4 bg-stone-900/85 backdrop-blur z-40">
+            <div class="text-[10px] text-amber-300 uppercase tracking-widest mb-1">Today's Special</div>
+            <div class="font-display font-bold text-white text-base">Kathiyawadi Thali</div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="font-display text-2xl font-black text-amber-400">₹220</span>
+              <span class="text-xs text-stone-500 line-through">₹280</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-amber-300/60">
+        <span class="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+        <div class="w-px h-12 bg-gradient-to-b from-amber-400 to-transparent"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Marquee ===== -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <div class="marquee-item">Gujarati Thali <span class="star">✦</span></div>
+      <div class="marquee-item">Kathiyawadi Shaak <span class="star">✦</span></div>
+      <div class="marquee-item">Punjabi Tadka <span class="star">✦</span></div>
+      <div class="marquee-item">Street Food <span class="star">✦</span></div>
+      <div class="marquee-item">Pure Veg Kitchen <span class="star">✦</span></div>
+      <div class="marquee-item">Hand-Pounded Spices <span class="star">✦</span></div>
+    </div>
+    <div class="marquee-track" aria-hidden="true">
+      <div class="marquee-item">Gujarati Thali <span class="star">✦</span></div>
+      <div class="marquee-item">Kathiyawadi Shaak <span class="star">✦</span></div>
+      <div class="marquee-item">Punjabi Tadka <span class="star">✦</span></div>
+      <div class="marquee-item">Street Food <span class="star">✦</span></div>
+      <div class="marquee-item">Pure Veg Kitchen <span class="star">✦</span></div>
+      <div class="marquee-item">Hand-Pounded Spices <span class="star">✦</span></div>
+    </div>
+  </div>
+
+  <!-- ===== Cuisines ===== -->
+  <section id="cuisines" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="glow w-[500px] h-[500px] bg-orange-700 top-0 right-0"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid lg:grid-cols-12 gap-10 mb-16 items-end">
+        <div class="lg:col-span-7">
+          <div class="section-tag mb-6 reveal"><span class="dot">01</span><span>Our Cuisines</span></div>
+          <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            Four cuisines.<br />
+            <span class="italic font-light text-amber-400">One soul.</span>
+          </h2>
+        </div>
+        <div class="lg:col-span-5 reveal">
+          <p class="text-stone-300 text-lg leading-relaxed">
+            From the earthy casseroles of Kathiyawad to the butter-soaked breads of Punjab, every dish at Jalaram is a tribute to the regions that inspire us — cooked slow, served warm, made with intention.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="cuisine-card reveal interactive" data-cuisine="gujarati">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/15 grid place-items-center text-2xl">🥘</div>
+            <span class="num-badge">01 / 04</span>
+          </div>
+          <h3 class="font-display font-bold text-2xl mb-2">Gujarati</h3>
+          <p class="text-sm text-stone-400 mb-6">Sweet, savoury & subtly spiced. The balanced thali from across Gujarat.</p>
+          <div class="space-y-2 text-xs text-stone-500">
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Undhiyu</span><span class="text-amber-400">₹240</span></div>
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Dhokla</span><span class="text-amber-400">₹80</span></div>
+            <div class="flex justify-between"><span>Shrikhand</span><span class="text-amber-400">₹110</span></div>
+          </div>
+          <div class="mt-6 flex items-center gap-2 text-amber-400 text-sm font-medium">
+            <span>Explore dishes</span><i class="fa-solid fa-arrow-right text-xs"></i>
+          </div>
+        </div>
+
+        <div class="cuisine-card reveal interactive" data-cuisine="kathiyawadi">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-orange-500/15 grid place-items-center text-2xl">🌶️</div>
+            <span class="num-badge">02 / 04</span>
+          </div>
+          <h3 class="font-display font-bold text-2xl mb-2">Kathiyawadi</h3>
+          <p class="text-sm text-stone-400 mb-6">Bold, spicy & rustic. The desert flavours of Saurashtra on a plate.</p>
+          <div class="space-y-2 text-xs text-stone-500">
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Sev Tameta</span><span class="text-amber-400">₹140</span></div>
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Ringan Olo</span><span class="text-amber-400">₹160</span></div>
+            <div class="flex justify-between"><span>Lasaniya Batata</span><span class="text-amber-400">₹150</span></div>
+          </div>
+          <div class="mt-6 flex items-center gap-2 text-amber-400 text-sm font-medium">
+            <span>Explore dishes</span><i class="fa-solid fa-arrow-right text-xs"></i>
+          </div>
+        </div>
+
+        <div class="cuisine-card reveal interactive" data-cuisine="punjabi">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-red-500/15 grid place-items-center text-2xl">🫓</div>
+            <span class="num-badge">03 / 04</span>
+          </div>
+          <h3 class="font-display font-bold text-2xl mb-2">Punjabi</h3>
+          <p class="text-sm text-stone-400 mb-6">Rich, creamy & robust. The hearty classics from the land of five rivers.</p>
+          <div class="space-y-2 text-xs text-stone-500">
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Dal Makhani</span><span class="text-amber-400">₹220</span></div>
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Chole Bhature</span><span class="text-amber-400">₹180</span></div>
+            <div class="flex justify-between"><span>Sarson Saag</span><span class="text-amber-400">₹250</span></div>
+          </div>
+          <div class="mt-6 flex items-center gap-2 text-amber-400 text-sm font-medium">
+            <span>Explore dishes</span><i class="fa-solid fa-arrow-right text-xs"></i>
+          </div>
+        </div>
+
+        <div class="cuisine-card reveal interactive" data-cuisine="fastfood">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-yellow-500/15 grid place-items-center text-2xl">🍔</div>
+            <span class="num-badge">04 / 04</span>
+          </div>
+          <h3 class="font-display font-bold text-2xl mb-2">Fast Food</h3>
+          <p class="text-sm text-stone-400 mb-6">Quick, cheesy & indulgent. Street-style comfort with a desi twist.</p>
+          <div class="space-y-2 text-xs text-stone-500">
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Cheese Pav Bhaji</span><span class="text-amber-400">₹140</span></div>
+            <div class="flex justify-between border-b border-stone-800 pb-2"><span>Veg Burger</span><span class="text-amber-400">₹90</span></div>
+            <div class="flex justify-between"><span>Italian Pizza</span><span class="text-amber-400">₹220</span></div>
+          </div>
+          <div class="mt-6 flex items-center gap-2 text-amber-400 text-sm font-medium">
+            <span>Explore dishes</span><i class="fa-solid fa-arrow-right text-xs"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Signature Dishes ===== -->
+  <section id="signature" class="relative py-24 lg:py-32 bg-stone-950 overflow-hidden">
+    <div class="glow w-[400px] h-[400px] bg-amber-500 bottom-0 left-1/4"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="flex flex-wrap items-end justify-between gap-6 mb-14">
+        <div>
+          <div class="section-tag mb-6 reveal"><span class="dot">02</span><span>Signature Selection</span></div>
+          <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            Most loved<br />
+            <span class="italic font-light text-amber-400">by Rajkot.</span>
+          </h2>
+        </div>
+        <a href="#menu" class="btn-ghost interactive reveal">
+          <span>Full Menu</span><i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+      <div class="food-carousel reveal">
+        <div class="carousel-item">
+          <div class="carousel-box">
+            <div class="carousel-num">01</div>
+            <div class="carousel-title">Paneer Butter Masala</div>
+            <div class="carousel-price">₹240</div>
+            <img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80" alt="Paneer Butter Masala" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="carousel-box">
+            <div class="carousel-num">02</div>
+            <div class="carousel-title">Jalaram Special Thali</div>
+            <div class="carousel-price">₹280</div>
+            <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80" alt="Jalaram Special Thali" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="carousel-box">
+            <div class="carousel-num">03</div>
+            <div class="carousel-title">Sev Tameta Nu Shaak</div>
+            <div class="carousel-price">₹140</div>
+            <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80" alt="Sev Tameta" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="carousel-box">
+            <div class="carousel-num">04</div>
+            <div class="carousel-title">Cheese Pav Bhaji</div>
+            <div class="carousel-price">₹140</div>
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="Cheese Pav Bhaji" loading="lazy" />
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-cursor"></div>
+      <div class="carousel-cursor carousel-cursor2"></div>
+    </div>
+  </section>
+
+  <!-- ===== About / Story ===== -->
+  <section id="about" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="glow w-[500px] h-[500px] bg-orange-600 top-1/3 -right-40"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-5 relative reveal">
+          <div class="relative aspect-[4/5] rounded-3xl overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=80" alt="Jalaram Restaurant interior" class="w-full h-full object-cover" loading="lazy" />
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent"></div>
+          </div>
+          <div class="absolute -bottom-8 -right-4 lg:-right-12 bg-stone-900/90 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-6 max-w-[240px]">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center font-display font-black text-stone-900">J</div>
+              <div>
+                <div class="font-display font-bold text-sm">Jalaram Family</div>
+                <div class="text-[10px] text-stone-500">Est. 1995</div>
+              </div>
+            </div>
+            <p class="text-xs text-stone-400 leading-relaxed italic">"We don't cook to impress. We cook to remind you of home."</p>
+          </div>
+          <div class="absolute -top-6 -left-6 w-24 h-24 border-2 border-amber-500/30 rounded-3xl -z-10"></div>
+        </div>
+
+        <div class="lg:col-span-7 lg:pl-10">
+          <div class="section-tag mb-6 reveal"><span class="dot">03</span><span>Our Story</span></div>
+          <h2 class="font-display font-black leading-[0.95] mb-8 reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            A kitchen that began<br />
+            with a <span class="italic font-light text-amber-400">single rotla.</span>
+          </h2>
+
+          <div class="space-y-5 text-stone-300 text-lg leading-relaxed reveal">
+            <p>
+              In 1995, in a small lane in Rajkot, Mr. Prabhudas Hirani set up a single-burner stove and a wooden cart. He served one dish — <em class="text-amber-300 not-italic font-medium">rotla with ringan no olo</em> — to factory workers heading home after long shifts.
+            </p>
+            <p>
+              Three decades later, that cart has grown into <strong class="text-amber-300 font-medium">Jalaram Restaurant</strong> — a 120-seat dining destination loved across Saurashtra. But the recipe hasn't changed: hand-pounded spices, pure ghee, fresh vegetables from the morning mandi, and the same warmth Mr. Hirani served with on day one.
+            </p>
+            <p>
+              Today, three generations of the Hirani family run Jalaram — preserving the soul of Kathiyawad while welcoming the flavours of Gujarat, Punjab and the streets of Mumbai into our kitchen.
+            </p>
+          </div>
+
+          <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 reveal">
+            <div class="p-4 rounded-2xl bg-stone-900/60 border border-amber-500/15">
+              <i class="fa-solid fa-mortar-pestle text-amber-400 text-xl mb-2"></i>
+              <div class="text-[10px] text-stone-400 uppercase tracking-wider">Hand-pounded</div>
+              <div class="text-sm font-medium">Spices</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-stone-900/60 border border-amber-500/15">
+              <i class="fa-solid fa-seedling text-green-400 text-xl mb-2"></i>
+              <div class="text-[10px] text-stone-400 uppercase tracking-wider">Pure Veg</div>
+              <div class="text-sm font-medium">Kitchen</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-stone-900/60 border border-amber-500/15">
+              <i class="fa-solid fa-droplet text-orange-400 text-xl mb-2"></i>
+              <div class="text-[10px] text-stone-400 uppercase tracking-wider">A2 Cow</div>
+              <div class="text-sm font-medium">Ghee Only</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-stone-900/60 border border-amber-500/15">
+              <i class="fa-solid fa-hand-holding-heart text-red-400 text-xl mb-2"></i>
+              <div class="text-[10px] text-stone-400 uppercase tracking-wider">Family</div>
+              <div class="text-sm font-medium">Run Since 1995</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Stats ===== -->
+  <section id="stats" class="relative py-20 border-y border-amber-500/10 spice-pattern">
+    <div class="max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center reveal">
+          <div class="font-display font-black text-5xl lg:text-7xl text-amber-400"><span data-count="28">0</span>+</div>
+          <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-2">Years of Service</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="font-display font-black text-5xl lg:text-7xl text-amber-400"><span data-count="120">0</span>+</div>
+          <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-2">Dishes on Menu</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="font-display font-black text-5xl lg:text-7xl text-amber-400"><span data-count="500">0</span>K+</div>
+          <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-2">Plates Served</div>
+        </div>
+        <div class="text-center reveal">
+          <div class="font-display font-black text-5xl lg:text-7xl text-amber-400"><span data-count="4.7" data-float="1">0</span>★</div>
+          <div class="text-[10px] text-stone-400 uppercase tracking-widest mt-2">Google Rating</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Menu ===== -->
+  <section id="menu" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="glow w-[500px] h-[500px] bg-amber-600 bottom-1/4 -left-40"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="text-center mb-14">
+        <div class="section-tag mb-6 reveal mx-auto"><span class="dot">04</span><span>The Complete Menu</span></div>
+        <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+          Pick your <span class="italic font-light text-amber-400">flavour.</span>
+        </h2>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-3 mb-12 reveal">
+        <button class="menu-tab active interactive" data-tab="gujarati">Gujarati</button>
+        <button class="menu-tab interactive" data-tab="kathiyawadi">Kathiyawadi</button>
+        <button class="menu-tab interactive" data-tab="punjabi">Punjabi</button>
+        <button class="menu-tab interactive" data-tab="fastfood">Fast Food</button>
+        <button class="menu-tab interactive" data-tab="desserts">Desserts & Drinks</button>
+      </div>
+
+      <div id="menu-content" class="grid md:grid-cols-2 gap-x-12 max-w-5xl mx-auto"></div>
+
+      <div class="text-center mt-12 reveal">
+        <p class="text-xs text-stone-500 mb-5">All prices include GST · Pure veg kitchen · Jain options available on request</p>
+        <a href="#visit" class="btn-primary interactive">
+          <span>Reserve a Table</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Why Choose Us ===== -->
+  <section id="why" class="relative py-24 lg:py-32 bg-stone-950 overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid lg:grid-cols-12 gap-12 mb-16 items-end">
+        <div class="lg:col-span-7">
+          <div class="section-tag mb-6 reveal"><span class="dot">05</span><span>Why Jalaram</span></div>
+          <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            Beyond taste —<br />
+            <span class="italic font-light text-amber-400">a way of cooking.</span>
+          </h2>
+        </div>
+        <div class="lg:col-span-5 reveal">
+          <p class="text-stone-300 text-lg leading-relaxed">
+            Every plate that leaves our kitchen carries four promises — the same four we made on day one, in 1995.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-stone-900 to-stone-900/40 border border-amber-500/15 reveal interactive relative overflow-hidden">
+          <div class="font-display text-7xl font-black text-amber-500/10 absolute top-2 right-4">01</div>
+          <i class="fa-solid fa-mortar-pestle text-3xl text-amber-400 mb-5 relative"></i>
+          <h3 class="font-display font-bold text-xl mb-3 relative">Hand-Pounded Spices</h3>
+          <p class="text-sm text-stone-400 leading-relaxed relative">No commercial masala. Every spice is dry-roasted and stone-ground fresh each morning in our kitchen.</p>
+        </div>
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-stone-900 to-stone-900/40 border border-amber-500/15 reveal interactive relative overflow-hidden">
+          <div class="font-display text-7xl font-black text-amber-500/10 absolute top-2 right-4">02</div>
+          <i class="fa-solid fa-leaf text-3xl text-green-400 mb-5 relative"></i>
+          <h3 class="font-display font-bold text-xl mb-3 relative">100% Pure Veg</h3>
+          <p class="text-sm text-stone-400 leading-relaxed relative">A strictly vegetarian kitchen. We also offer Jain variants — no onion, no garlic, no root veg — on every dish.</p>
+        </div>
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-stone-900 to-stone-900/40 border border-amber-500/15 reveal interactive relative overflow-hidden">
+          <div class="font-display text-7xl font-black text-amber-500/10 absolute top-2 right-4">03</div>
+          <i class="fa-solid fa-droplet text-3xl text-orange-400 mb-5 relative"></i>
+          <h3 class="font-display font-bold text-xl mb-3 relative">A2 Cow Ghee Only</h3>
+          <p class="text-sm text-stone-400 leading-relaxed relative">We cook only in pure A2 Gir cow ghee — sourced from a single farm near Gondal. No vanaspati, ever.</p>
+        </div>
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-stone-900 to-stone-900/40 border border-amber-500/15 reveal interactive relative overflow-hidden">
+          <div class="font-display text-7xl font-black text-amber-500/10 absolute top-2 right-4">04</div>
+          <i class="fa-solid fa-truck-fast text-3xl text-yellow-400 mb-5 relative"></i>
+          <h3 class="font-display font-bold text-xl mb-3 relative">Mandi-Fresh Daily</h3>
+          <p class="text-sm text-stone-400 leading-relaxed relative">Vegetables arrive at 6 AM from Rajkot mandi. We close when we sell out — no yesterday's food, ever.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Gallery ===== -->
+  <section id="gallery" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+        <div>
+          <div class="section-tag mb-6 reveal"><span class="dot">06</span><span>Moments</span></div>
+          <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            From our kitchen<br />
+            <span class="italic font-light text-amber-400">to your feed.</span>
+          </h2>
+        </div>
+        <a href="#" class="btn-ghost interactive reveal">
+          <i class="fa-brands fa-instagram text-pink-400"></i>
+          <span>@jalaram.rajkot</span>
+        </a>
+      </div>
+
+      <div class="gallery-grid reveal">
+        <div class="gallery-item col-span-12 md:col-span-6 row-span-2 aspect-square md:aspect-auto md:h-full interactive">
+          <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80" alt="Gallery" loading="lazy" />
+        </div>
+        <div class="gallery-item col-span-6 md:col-span-3 aspect-square interactive">
+          <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&q=80" alt="Gallery" loading="lazy" />
+        </div>
+        <div class="gallery-item col-span-6 md:col-span-3 aspect-square interactive">
+          <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80" alt="Gallery" loading="lazy" />
+        </div>
+        <div class="gallery-item col-span-6 md:col-span-3 aspect-square interactive">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80" alt="Gallery" loading="lazy" />
+        </div>
+        <div class="gallery-item col-span-6 md:col-span-3 aspect-square interactive">
+          <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500&q=80" alt="Gallery" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Testimonials ===== -->
+  <section id="testimonials" class="relative py-24 lg:py-32 bg-stone-950 overflow-hidden">
+    <div class="glow w-[400px] h-[400px] bg-orange-600 top-1/2 -translate-y-1/2 -right-40"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="text-center mb-14">
+        <div class="section-tag mb-6 reveal mx-auto"><span class="dot">07</span><span>What Rajkot Says</span></div>
+        <h2 class="font-display font-black leading-[0.95] reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+          Words from <span class="italic font-light text-amber-400">our family.</span>
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="testimonial-card reveal interactive">
+          <div class="flex items-center gap-1 text-amber-400 mb-4">
+            <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i>
+          </div>
+          <p class="text-stone-300 leading-relaxed mb-6">"The sev tameta here tastes exactly like my grandmother's. I've been coming here for 15 years and not once has the taste changed. That's a miracle in today's Rajkot."</p>
+          <div class="flex items-center gap-3 pt-6 border-t border-stone-800">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center font-display font-bold text-stone-900">RM</div>
+            <div>
+              <div class="font-medium">Ritesh Mehta</div>
+              <div class="text-[11px] text-stone-500">Regular since 2009</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal interactive">
+          <div class="flex items-center gap-1 text-amber-400 mb-4">
+            <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i>
+          </div>
+          <p class="text-stone-300 leading-relaxed mb-6">"We hosted my daughter's birthday lunch at Jalaram. The Punjabi thali was a hit with the kids, and the kathiyawadi shaak had the elders smiling. Service felt like family."</p>
+          <div class="flex items-center gap-3 pt-6 border-t border-stone-800">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center font-display font-bold text-stone-900">SP</div>
+            <div>
+              <div class="font-medium">Sneha Patel</div>
+              <div class="text-[11px] text-stone-500">Kalavad Road, Rajkot</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal interactive">
+          <div class="flex items-center gap-1 text-amber-400 mb-4">
+            <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i>
+          </div>
+          <p class="text-stone-300 leading-relaxed mb-6">"I travel from Ahmedabad to Rajkot every month for work. Jalaram's kathiyawadi thali is the only reason I look forward to the drive. The rotla, the lasan chutney — perfection."</p>
+          <div class="flex items-center gap-3 pt-6 border-t border-stone-800">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center font-display font-bold text-stone-900">AK</div>
+            <div>
+              <div class="font-medium">Anil Kothari</div>
+              <div class="text-[11px] text-stone-500">Ahmedabad</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Visit Us ===== -->
+  <section id="visit" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="glow w-[500px] h-[500px] bg-amber-600 top-0 right-0"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-5">
+          <div class="section-tag mb-6 reveal"><span class="dot">08</span><span>Visit Us</span></div>
+          <h2 class="font-display font-black leading-[0.95] mb-8 reveal" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+            Come sit at <br />
+            <span class="italic font-light text-amber-400">our table.</span>
+          </h2>
+          <p class="text-stone-300 text-lg leading-relaxed mb-10 reveal">
+            Walk-ins welcome. Reservations recommended on weekends. We can't wait to feed you.
+          </p>
+
+          <div class="space-y-6 reveal">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/15 grid place-items-center shrink-0">
+                <i class="fa-solid fa-location-dot text-amber-400"></i>
+              </div>
+              <div>
+                <div class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Address</div>
+                <div class="font-medium">Jalaram Restaurant,<br />Rajkot, Gujarat 360001<br /><span class="text-amber-400 text-xs">(Tap 'Directions' for exact live location)</span></div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/15 grid place-items-center shrink-0">
+                <i class="fa-solid fa-phone text-amber-400"></i>
+              </div>
+              <div>
+                <div class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Reservations</div>
+                <div class="font-medium">+91 98XXX XXXXX<br />+91 98XXX XXXXX</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/15 grid place-items-center shrink-0">
+                <i class="fa-solid fa-clock text-amber-400"></i>
+              </div>
+              <div>
+                <div class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Hours</div>
+                <div class="font-medium">Mon – Sun · 9:00 AM – 11:00 PM<br /><span class="text-amber-400">Open all days</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-wrap gap-3 reveal">
+            <a href="https://share.google/peCdrl72kb1nUOBis" target="_blank" rel="noopener" class="btn-primary interactive">
+              <i class="fa-solid fa-directions"></i>
+              <span>Get Directions</span>
+            </a>
+            <a href="#menu" class="btn-ghost interactive">
+              <i class="fa-solid fa-utensils text-amber-400"></i>
+              <span>Order Now</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 reveal">
+          <div class="rounded-3xl overflow-hidden border border-amber-500/20 aspect-[4/3] lg:aspect-auto lg:h-[560px] relative">
+            <iframe
+              src="https://maps.google.com/maps?q=Jalaram%20Restaurant%20Rajkot&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              class="w-full h-full"
+              style="border:0; filter: invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.9);"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+            <div class="absolute bottom-4 left-4 right-4 bg-stone-900/95 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-5 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center shrink-0">
+                <i class="fa-solid fa-utensils text-stone-900"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-display font-bold text-lg truncate">Jalaram Restaurant</div>
+                <div class="text-xs text-stone-400 truncate">Rajkot · Gujarat · India</div>
+              </div>
+              <a href="https://share.google/peCdrl72kb1nUOBis" target="_blank" rel="noopener" class="btn-primary interactive text-xs py-2.5 px-4 shrink-0">
+                <span>Directions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="relative pt-20 pb-8 border-t border-amber-500/10 bg-stone-950 overflow-hidden">
+    <div class="glow w-[600px] h-[600px] bg-orange-700 -top-40 left-1/2 -translate-x-1/2"></div>
+    <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="text-center mb-20 reveal">
+        <h3 class="font-display font-black leading-[0.9]" style="font-size: clamp(3rem, 10vw, 8rem);">
+          Hungry <span class="italic font-light text-amber-400">already?</span>
+        </h3>
+        <a href="#visit" class="btn-primary interactive mt-8">
+          <span>Reserve Your Table</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-10 pb-12 border-b border-stone-800">
+        <div class="md:col-span-4">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center">
+              <span class="font-display font-black text-stone-900 text-xl italic">J</span>
+            </div>
+            <div>
+              <div class="font-display font-black text-xl">Jalaram Restaurant</div>
+              <div class="text-[10px] tracking-[0.28em] text-amber-300/60 uppercase">Rajkot · Since 1995</div>
+            </div>
+          </div>
+          <p class="text-sm text-stone-400 leading-relaxed mb-5">Authentic Gujarati, Kathiyawadi, Punjabi & street-style fast food — hand-crafted with love in the heart of Rajkot.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 grid place-items-center hover:border-amber-500 hover:text-amber-400 transition interactive"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 grid place-items-center hover:border-amber-500 hover:text-amber-400 transition interactive"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 grid place-items-center hover:border-amber-500 hover:text-amber-400 transition interactive"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://share.google/peCdrl72kb1nUOBis" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 grid place-items-center hover:border-amber-500 hover:text-amber-400 transition interactive"><i class="fa-brands fa-google"></i></a>
+          </div>
+        </div>
+        <div class="md:col-span-2">
+          <div class="text-[10px] text-amber-400 uppercase tracking-widest mb-4 font-medium">Explore</div>
+          <ul class="space-y-3 text-sm text-stone-400">
+            <li><a href="#cuisines" class="hover:text-amber-300 transition interactive">Cuisines</a></li>
+            <li><a href="#signature" class="hover:text-amber-300 transition interactive">Signature Dishes</a></li>
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Full Menu</a></li>
+            <li><a href="#about" class="hover:text-amber-300 transition interactive">Our Story</a></li>
+            <li><a href="#gallery" class="hover:text-amber-300 transition interactive">Gallery</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-2">
+          <div class="text-[10px] text-amber-400 uppercase tracking-widest mb-4 font-medium">Cuisines</div>
+          <ul class="space-y-3 text-sm text-stone-400">
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Gujarati</a></li>
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Kathiyawadi</a></li>
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Punjabi</a></li>
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Fast Food</a></li>
+            <li><a href="#menu" class="hover:text-amber-300 transition interactive">Desserts</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-4">
+          <div class="text-[10px] text-amber-400 uppercase tracking-widest mb-4 font-medium">Get the Spice Letter</div>
+          <p class="text-sm text-stone-400 mb-4">Monthly stories, new dishes & festival specials — straight to your inbox.</p>
+          <form id="newsletter" class="flex gap-2">
+            <input type="email" required placeholder="you@example.com" class="flex-1 bg-stone-900 border border-stone-800 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-amber-500 transition" />
+            <button type="submit" class="btn-primary interactive text-sm py-3 px-5"><i class="fa-solid fa-arrow-right"></i></button>
+          </form>
+          <div id="newsletter-msg" class="text-xs text-amber-400 mt-3 hidden"><i class="fa-solid fa-check"></i> Thank you. You're on the list.</div>
+        </div>
+      </div>
+
+      <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500">
+        <div>© 2024 Jalaram Restaurant · Rajkot · Gujarat. All rights reserved.</div>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-amber-300 transition interactive">Privacy</a>
+          <a href="#" class="hover:text-amber-300 transition interactive">Terms</a>
+          <a href="#" class="hover:text-amber-300 transition interactive">FSSAI Certified</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Floating WhatsApp-style CTA ===== -->
+  <a href="#menu" class="float-cta interactive" aria-label="Quick order">
+    <i class="fa-solid fa-utensils"></i>
+  </a>
+
+  <!-- ===== Three.js hero particles (aroma / spice) ===== -->
+  <script type="module">
+    import * as THREE from 'three';
+
+    const canvas = document.getElementById('hero-canvas');
+    const heroSection = document.getElementById('hero');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Soft radial sprite texture
+    const particleTexture = (() => {
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255, 220, 150, 1)');
+      grad.addColorStop(0.3, 'rgba(255, 150, 50, 0.55)');
+      grad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
+    })();
+
+    const particleCount = window.innerWidth < 768 ? 180 : 350;
+    const positions = new Float32Array(particleCount * 3);
+    const speeds = [];
+    const swayOffsets = [];
+    const swayAmps = [];
+    const colors = new Float32Array(particleCount * 3);
+
+    const palette = [
+      new THREE.Color('#FF6B1A'),
+      new THREE.Color('#F4B82E'),
+      new THREE.Color('#D62828'),
+      new THREE.Color('#FF8534'),
+    ];
+
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 90;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 60;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+      speeds.push(0.015 + Math.random() * 0.045);
+      swayOffsets.push(Math.random() * Math.PI * 2);
+      swayAmps.push(0.003 + Math.random() * 0.008);
+      const col = palette[Math.floor(Math.random() * palette.length)];
+      colors[i * 3] = col.r;
+      colors[i * 3 + 1] = col.g;
+      colors[i * 3 + 2] = col.b;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 0.85,
+      map: particleTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      vertexColors: true,
+      sizeAttenuation: true,
+    });
+
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const pos = geometry.attributes.position.array;
+      const t = Date.now() * 0.001;
+      for (let i = 0; i < particleCount; i++) {
+        pos[i * 3 + 1] += speeds[i];
+        pos[i * 3] += Math.sin(t + swayOffsets[i]) * swayAmps[i];
+        if (pos[i * 3 + 1] > 32) {
+          pos[i * 3 + 1] = -32;
+          pos[i * 3] = (Math.random() - 0.5) * 90;
+        }
+      }
+      geometry.attributes.position.needsUpdate = true;
+      points.rotation.y += (mouseX * 0.12 - points.rotation.y) * 0.025;
+      points.rotation.x += (mouseY * 0.06 - points.rotation.x) * 0.025;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+  <!-- ===== Main JS ===== -->
+  <script>
+    // Loader
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('loader').classList.add('done'), 700);
+    });
+
+    // Custom cursor
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    });
+
+    function followRing() {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+      requestAnimationFrame(followRing);
+    }
+    followRing();
+
+    document.querySelectorAll('a, button, .interactive').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // 3D tilt on signature dish cards
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(1000px) rotateX(${-y * 12}deg) rotateY(${x * 12}deg) translateY(-8px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+      });
+    });
+
+    // Cuisine card glow
+    document.querySelectorAll('.cuisine-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = ((e.clientX - rect.left) / rect.width) * 100;
+        const py = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mx', `${px}%`);
+        card.style.setProperty('--my', `${py}%`);
+      });
+      // Click → jump to menu tab
+      card.addEventListener('click', () => {
+        const cuisine = card.dataset.cuisine;
+        const tab = document.querySelector(`.menu-tab[data-tab="${cuisine}"]`);
+        if (tab) {
+          document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          renderMenu(cuisine);
+          document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Counter animation
+    const counters = document.querySelectorAll('[data-count]');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseFloat(el.dataset.count);
+          const isFloat = el.dataset.float === '1';
+          const duration = 1800;
+          const start = performance.now();
+          function update(now) {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = target * eased;
+            el.textContent = isFloat ? current.toFixed(1) : Math.floor(current);
+            if (progress < 1) requestAnimationFrame(update);
+          }
+          requestAnimationFrame(update);
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObserver.observe(c));
+
+    // Menu data
+    const menuData = {
+      gujarati: [
+        { name: 'Jalaram Special Gujarati Thali', desc: 'Shaak, dal, bhat, rotli, farsan, sweet & chaas', price: 280, tag: 'Bestseller' },
+        { name: 'Undhiyu', desc: 'Mixed winter vegetables, muthiya, green garlic masala', price: 240, tag: 'Seasonal' },
+        { name: 'Khandvi', desc: 'Soft rolled gram flour, tempered mustard, coconut', price: 80 },
+        { name: 'Dhokla', desc: 'Steamed fermented gram flour, green chutney', price: 80 },
+        { name: 'Thepla (5 pcs)', desc: 'Fenugreek flatbread, perfect for travel', price: 70 },
+        { name: 'Fafda Jalebi', desc: 'Crispy gram flour strips with sweet jalebi', price: 110, tag: 'Sunday Special' },
+        { name: 'Kadhi Khichdi', desc: 'Spiced buttermilk curry with mild rice khichdi', price: 140 },
+        { name: 'Sev Khamani', desc: 'Crumbled dhokla topped with nylon sev, pomegranate', price: 120 },
+        { name: 'Aamras Puri', desc: 'Sweet Alphonso mango pulp with hot puris', price: 180, tag: 'Seasonal' },
+        { name: 'Shrikhand', desc: 'Strained yogurt, saffron, cardamom, pistachio', price: 110 },
+      ],
+      kathiyawadi: [
+        { name: 'Kathiyawadi Thali', desc: '3 shaak, rotla, bajra rotli, khichdi, chaas, sweet', price: 220, tag: 'Bestseller' },
+        { name: 'Sev Tameta Nu Shaak', desc: 'Tomatoes & thick sev in garlic-turmeric masala', price: 140 },
+        { name: 'Ringan No Olo', desc: 'Smoked mashed brinjal, green garlic, baingan bharta style', price: 160 },
+        { name: 'Lasaniya Batata', desc: 'Baby potatoes in fiery garlic-tamarind gravy', price: 150, tag: 'Spicy' },
+        { name: 'Bateta Nu Rasu', desc: 'Potatoes in tangy tomato-onion gravy', price: 130 },
+        { name: 'Cholia Nu Shaak', desc: 'Fresh green chana cooked with winter spices', price: 170, tag: 'Seasonal' },
+        { name: 'Bajra Rotla (2 pcs)', desc: 'Pearl millet flatbread, ghee, jaggery', price: 60 },
+        { name: 'Makai Rotla (2 pcs)', desc: 'Maize flatbread, white butter', price: 70 },
+        { name: 'Lasoon Chutney', desc: 'Garlic-red chilli chutney, served as side', price: 40 },
+        { name: 'Masala Chaas', desc: 'Spiced buttermilk with cumin, mint', price: 50 },
+      ],
+      punjabi: [
+        { name: 'Paneer Butter Masala', desc: 'Cottage cheese in creamy tomato-cashew gravy', price: 240, tag: 'Bestseller' },
+        { name: 'Dal Makhani', desc: 'Black lentils simmered overnight with butter & cream', price: 220 },
+        { name: 'Chole Bhature', desc: 'Spicy chickpea curry with fried fluffy bhatura (2 pcs)', price: 180 },
+        { name: 'Sarson Ka Saag', desc: 'Mustard greens, spinach, white butter (winter only)', price: 250, tag: 'Seasonal' },
+        { name: 'Makki Di Roti (2 pcs)', desc: 'Maize flatbread with white butter', price: 70 },
+        { name: 'Amritsari Kulcha', desc: 'Stuffed crispy flatbread, chole, onion salad', price: 160 },
+        { name: 'Rajma', desc: 'Red kidney beans in onion-tomato masala', price: 200 },
+        { name: 'Kadai Paneer', desc: 'Cottage cheese & peppers in roasted spice masala', price: 240 },
+        { name: 'Butter Naan', desc: 'Tandoor-baked flatbread brushed with butter', price: 50 },
+        { name: 'Sweet Lassi', desc: 'Thick sweet yogurt drink, topped with cream', price: 80 },
+      ],
+      fastfood: [
+        { name: 'Cheese Pav Bhaji', desc: 'Mashed veg curry with cheese, butter-toasted pav', price: 140, tag: 'Bestseller' },
+        { name: 'Veg Burger', desc: 'Crispy patty, cheese, lettuce, jalapeño mayo', price: 90 },
+        { name: 'Italian Pizza (8")', desc: 'Cheese, capsicum, onion, tomato, sweet corn', price: 220 },
+        { name: 'Cheese Sandwich (Grilled)', desc: 'Triple-layer, cheese, chutney, vegetables', price: 100 },
+        { name: 'Cheese French Fries', desc: 'Crispy fries loaded with cheese & herbs', price: 110 },
+        { name: 'Vada Pav', desc: 'Mumbai-style spiced potato fritter in bun, chutneys', price: 50 },
+        { name: 'Paneer Frankie Roll', desc: 'Paneer tikka wrap with onions & mint mayo', price: 130 },
+        { name: 'Pasta (White Sauce)', desc: 'Penne in creamy alfredo, vegetables, herbs', price: 180 },
+        { name: 'Pasta (Red Sauce)', desc: 'Penne in spicy arrabbiata, vegetables, herbs', price: 170 },
+        { name: 'Cold Coffee', desc: 'Thick blended coffee with ice cream', price: 100 },
+      ],
+      desserts: [
+        { name: 'Gulab Jamun (2 pcs)', desc: 'Warm milk dumplings in rose-cardamom syrup', price: 80 },
+        { name: 'Shrikhand', desc: 'Strained yogurt, saffron, cardamom, pistachio', price: 110 },
+        { name: 'Aamras', desc: 'Sweet Alphonso mango pulp (summer only)', price: 140, tag: 'Seasonal' },
+        { name: 'Basundi', desc: 'Reduced sweet milk, nuts, cardamom', price: 120 },
+        { name: 'Jalebi', desc: 'Crispy sweet spirals, served warm', price: 70 },
+        { name: 'Gajar Halwa', desc: 'Slow-cooked carrot pudding, ghee, nuts', price: 130, tag: 'Seasonal' },
+        { name: 'Masala Chai', desc: 'Strong tea, ginger, cardamom', price: 30 },
+        { name: 'Sweet Lassi', desc: 'Thick sweet yogurt drink', price: 80 },
+        { name: 'Masala Chaas', desc: 'Spiced buttermilk with cumin, mint', price: 50 },
+        { name: 'Cold Coffee', desc: 'Thick blended coffee with ice cream', price: 100 },
+      ],
+    };
+
+    function renderMenu(category) {
+      const container = document.getElementById('menu-content');
+      const items = menuData[category] || [];
+      container.style.opacity = '0';
+      container.style.transform = 'translateY(8px)';
+      setTimeout(() => {
+        container.innerHTML = items.map((item, i) => `
+          <div class="menu-item-row">
+            <div class="font-display text-xs text-stone-600 mt-1 w-6 shrink-0">${String(i + 1).padStart(2, '0')}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-3 mb-1 flex-wrap">
+                <h4 class="font-display font-bold text-lg flex items-center gap-2 flex-wrap">
+                  ${item.name}
+                  ${item.tag ? `<span class="text-[9px] uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full font-sans font-medium">${item.tag}</span>` : ''}
+                </h4>
+                <span class="font-display font-black text-xl text-amber-400 shrink-0">₹${item.price}</span>
+              </div>
+              <p class="text-sm text-stone-400 leading-relaxed">${item.desc}</p>
+            </div>
+          </div>
+        `).join('');
+        container.style.opacity = '1';
+        container.style.transform = 'translateY(0)';
+      }, 200);
+    }
+
+    renderMenu('gujarati');
+
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderMenu(tab.dataset.tab);
+      });
+    });
+
+    // Cart counter (signature "+" buttons)
+    let cartCount = 0;
+    const cartCountEl = document.getElementById('cart-count');
+    const cartPill = document.getElementById('cart-pill');
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        cartCount++;
+        cartCountEl.textContent = cartCount;
+        cartPill.classList.remove('hidden');
+        cartPill.classList.add('flex');
+        // little pop animation
+        btn.style.transform = 'scale(0.85) rotate(90deg)';
+        setTimeout(() => btn.style.transform = '', 200);
+        // toast
+        showToast(`Added to order · ${cartCount} item${cartCount > 1 ? 's' : ''}`);
+      });
+    });
+
+    // ===== Food Carousel =====
+    let carouselProgress = 50;
+    let carouselStartX = 0;
+    let carouselActive = 0;
+    let carouselIsDown = false;
+
+    const carouselSpeedWheel = 0.03;
+    const carouselSpeedDrag = -0.15;
+
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    const carouselCursors = document.querySelectorAll('.carousel-cursor');
+
+    const getZindex = (array, index) => (array.map((_, i) => (index === i) ? array.length : array.length - Math.abs(index - i)));
+
+    const displayCarouselItem = (item, index, active) => {
+      const zIndex = getZindex([...carouselItems], active)[index];
+      item.style.setProperty('--zIndex', zIndex);
+      item.style.setProperty('--active', (index - active) / carouselItems.length);
+    };
+
+    const animateCarousel = () => {
+      carouselProgress = Math.max(0, Math.min(carouselProgress, 100));
+      carouselActive = Math.floor(carouselProgress / 100 * (carouselItems.length - 1));
+      
+      carouselItems.forEach((item, index) => displayCarouselItem(item, index, carouselActive));
+    };
+    animateCarousel();
+
+    carouselItems.forEach((item, i) => {
+      item.addEventListener('click', () => {
+        carouselProgress = (i / carouselItems.length) * 100 + 15;
+        animateCarousel();
+      });
+    });
+
+    const handleCarouselWheel = e => {
+      const wheelProgress = e.deltaY * carouselSpeedWheel;
+      carouselProgress = carouselProgress + wheelProgress;
+      animateCarousel();
+    };
+
+    const handleCarouselMouseMove = (e) => {
+      if (e.type === 'mousemove') {
+        carouselCursors.forEach(($cursor) => {
+          $cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+      }
+      if (!carouselIsDown) return;
+      const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+      const mouseProgress = (x - carouselStartX) * carouselSpeedDrag;
+      carouselProgress = carouselProgress + mouseProgress;
+      carouselStartX = x;
+      animateCarousel();
+    };
+
+    const handleCarouselMouseDown = e => {
+      carouselIsDown = true;
+      carouselStartX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    };
+
+    const handleCarouselMouseUp = () => {
+      carouselIsDown = false;
+    };
+
+    const signatureSection = document.getElementById('signature');
+    if (signatureSection) {
+      signatureSection.addEventListener('wheel', handleCarouselWheel);
+      signatureSection.addEventListener('mousedown', handleCarouselMouseDown);
+      signatureSection.addEventListener('mousemove', handleCarouselMouseMove);
+      signatureSection.addEventListener('mouseup', handleCarouselMouseUp);
+      signatureSection.addEventListener('touchstart', handleCarouselMouseDown);
+      signatureSection.addEventListener('touchmove', handleCarouselMouseMove);
+      signatureSection.addEventListener('touchend', handleCarouselMouseUp);
+    }
+
+    // Toast system
+    function showToast(message) {
+      const existing = document.querySelector('.toast-msg');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg';
+      toast.textContent = message;
+      toast.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+        background: rgba(34, 23, 16, 0.95); color: #FFF5E1;
+        padding: 14px 24px; border-radius: 100px; font-size: 13px;
+        border: 1px solid rgba(244, 184, 46, 0.35);
+        backdrop-filter: blur(20px); z-index: 100;
+        opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 12px 40px -8px rgba(0,0,0,0.6);
+        font-weight: 500; letter-spacing: 0.02em;
+      `;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 2200);
+    }
+
+    // Newsletter
+    document.getElementById('newsletter').addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.target.reset();
+      const msg = document.getElementById('newsletter-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 4000);
+    });
+
+    // Keyboard accessibility for cuisine cards
+    document.querySelectorAll('.cuisine-card').forEach(card => {
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
