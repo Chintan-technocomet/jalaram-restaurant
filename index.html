@@ -347,10 +347,11 @@
   .food-carousel {
     position: relative;
     z-index: 1;
-    height: 70vh;
+    height: 100%;
+    margin-top: 15%;
     min-height: 500px;
-    max-height: 700px;
-    overflow: hidden;
+    max-height: 100%;
+    overflow: visible;
     pointer-events: none;
   }
 
@@ -358,9 +359,9 @@
     --items: 4;
     --width: clamp(200px, 25vw, 350px);
     --height: clamp(280px, 35vw, 450px);
-    --x: calc(var(--active) * 600%);
-    --y: calc(var(--active) * 150%);
-    --rot: calc(var(--active) * 90deg);
+    --x: calc(var(--active) * 450%);
+    --y: calc(var(--active) * 110%);
+    --rot: calc(var(--active) * 60deg);
     --opacity: calc(var(--zIndex) / var(--items) * 2.5 - 1.5);
     overflow: hidden;
     position: absolute;
@@ -374,7 +375,7 @@
     user-select: none;
     transform-origin: 0% 100%;
     box-shadow: 0 20px 60px 20px rgba(0, 0, 0, 0.6);
-    background: var(--surface);
+    background: transparent;
     pointer-events: all;
     transform: translate(var(--x), var(--y)) rotate(var(--rot));
     transition: transform 0.8s cubic-bezier(0, 0.02, 0, 1);
@@ -787,43 +788,17 @@
         </a>
       </div>
 
-      <div class="food-carousel reveal">
-        <div class="carousel-item">
-          <div class="carousel-box">
-            <div class="carousel-num">01</div>
-            <div class="carousel-title">Paneer Butter Masala</div>
-            <div class="carousel-price">₹180</div>
-            <img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80" alt="Paneer Butter Masala" loading="lazy" />
-          </div>
-        </div>
-
-        <div class="carousel-item">
-          <div class="carousel-box">
-            <div class="carousel-num">02</div>
-            <div class="carousel-title">Unlimited Gujarati Thali</div>
-            <div class="carousel-price">₹180</div>
-            <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80" alt="Unlimited Gujarati Thali" loading="lazy" />
-          </div>
-        </div>
-
-        <div class="carousel-item">
-          <div class="carousel-box">
-            <div class="carousel-num">03</div>
-            <div class="carousel-title">Sev Tameta</div>
-            <div class="carousel-price">₹70</div>
-            <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80" alt="Sev Tameta" loading="lazy" />
-          </div>
-        </div>
-
-        <div class="carousel-item">
-          <div class="carousel-box">
-            <div class="carousel-num">04</div>
-            <div class="carousel-title">7 Cheese Pizza</div>
-            <div class="carousel-price">₹230</div>
-            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="7 Cheese Pizza" loading="lazy" />
-          </div>
-        </div>
+      <div class="food-carousel reveal" id="signature-carousel">
+        <!-- Dynamically Populated -->
       </div>
+
+      <!-- Carousel Navigation Buttons in Corners -->
+      <button id="carousel-prev" class="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-transparent text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Previous dish">
+        <i class="fa-solid fa-arrow-left text-lg"></i>
+      </button>
+      <button id="carousel-next" class="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-transparent text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Next dish">
+        <i class="fa-solid fa-arrow-right text-lg"></i>
+      </button>
 
       <div class="carousel-cursor"></div>
       <div class="carousel-cursor carousel-cursor2"></div>
@@ -1567,7 +1542,48 @@
       });
     });
 
-    // ===== Food Carousel =====
+
+
+    // ===== Dynamic Food Carousel (Loads all menu items) =====
+    const getFoodImage = (name) => {
+      const n = name.toLowerCase();
+      if (n.includes('thali')) return 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80';
+      if (n.includes('paneer')) return 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&q=80';
+      if (n.includes('tameta') || n.includes('tomato')) return 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80';
+      if (n.includes('pizza')) return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80';
+      if (n.includes('noodel') || n.includes('noodles')) return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&q=80';
+      if (n.includes('pasta')) return 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&q=80';
+      if (n.includes('bread') || n.includes('sandwich') || n.includes('burger')) return 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80';
+      if (n.includes('gulab') || n.includes('jambu') || n.includes('shrikhand') || n.includes('ras') || n.includes('sweet')) return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80';
+      if (n.includes('gathiya') || n.includes('sev') || n.includes('chavanu') || n.includes('bhakharwadi')) return 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80';
+      return 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80';
+    };
+
+    const carouselData = [];
+    Object.keys(menuData).forEach(cat => {
+      menuData[cat].forEach(item => {
+        carouselData.push({
+          name: item.name,
+          price: item.price,
+          img: getFoodImage(item.name)
+        });
+      });
+    });
+
+    const carouselContainer = document.getElementById('signature-carousel');
+    if (carouselContainer) {
+      carouselContainer.innerHTML = carouselData.map((item, i) => `
+        <div class="carousel-item" style="--items: ${carouselData.length};">
+          <div class="carousel-box">
+            <div class="carousel-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="carousel-title">${item.name}</div>
+            <div class="carousel-price">₹${item.price}</div>
+            <img src="${item.img}" alt="${item.name}" loading="lazy" />
+          </div>
+        </div>
+      `).join('');
+    }
+
     let carouselProgress = 50;
     let carouselStartX = 0;
     let carouselActive = 0;
@@ -1582,9 +1598,15 @@
     const getZindex = (array, index) => (array.map((_, i) => (index === i) ? array.length : array.length - Math.abs(index - i)));
 
     const displayCarouselItem = (item, index, active) => {
+      const diff = Math.abs(index - active);
+      if (diff > 4) {
+        item.style.display = 'none';
+        return;
+      }
+      item.style.display = 'block';
       const zIndex = getZindex([...carouselItems], active)[index];
       item.style.setProperty('--zIndex', zIndex);
-      item.style.setProperty('--active', (index - active) / carouselItems.length);
+      item.style.setProperty('--active', (index - active) / 3.5);
     };
 
     const animateCarousel = () => {
@@ -1640,6 +1662,21 @@
       signatureSection.addEventListener('touchstart', handleCarouselMouseDown);
       signatureSection.addEventListener('touchmove', handleCarouselMouseMove);
       signatureSection.addEventListener('touchend', handleCarouselMouseUp);
+    }
+
+    // Prev / Next button listeners
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    if (prevBtn && nextBtn) {
+      const step = 100 / (carouselItems.length - 1);
+      prevBtn.addEventListener('click', () => {
+        carouselProgress = Math.max(0, carouselProgress - step);
+        animateCarousel();
+      });
+      nextBtn.addEventListener('click', () => {
+        carouselProgress = Math.min(100, carouselProgress + step);
+        animateCarousel();
+      });
     }
 
     // Toast system
