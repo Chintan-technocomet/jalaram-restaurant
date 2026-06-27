@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jalaram-restaurant.vercel.app/sitemap.xml
