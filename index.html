@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
 <script type="importmap">
 {
   "imports": {
@@ -500,6 +501,61 @@
       --height: clamp(300px, 70vw, 380px);
     }
   }
+
+  /* ===== Driver.js Custom Theming ===== */
+  .driver-popover {
+    background-color: var(--bg-2) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 20px !important;
+    color: var(--fg) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+    font-family: 'Outfit', sans-serif !important;
+    padding: 20px !important;
+  }
+  .driver-popover-title {
+    font-family: 'Fraunces', serif !important;
+    font-weight: 700 !important;
+    color: var(--turmeric) !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 8px !important;
+  }
+  .driver-popover-description {
+    color: var(--fg-muted) !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+  .driver-popover-arrow {
+    border-color: var(--bg-2) !important;
+  }
+  .driver-popover-arrow-side-top { border-top-color: var(--border-strong) !important; }
+  .driver-popover-arrow-side-bottom { border-bottom-color: var(--border-strong) !important; }
+  .driver-popover-arrow-side-left { border-left-color: var(--border-strong) !important; }
+  .driver-popover-arrow-side-right { border-right-color: var(--border-strong) !important; }
+
+  .driver-popover-navigation-btn {
+    background-color: var(--saffron) !important;
+    color: var(--bg) !important;
+    border: none !important;
+    font-weight: 600 !important;
+    border-radius: 100px !important;
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+    transition: all 0.2s !important;
+    text-shadow: none !important;
+  }
+  .driver-popover-navigation-btn:hover {
+    background-color: var(--turmeric) !important;
+  }
+  .driver-popover-close-btn {
+    color: var(--fg-dim) !important;
+  }
+  .driver-popover-close-btn:hover {
+    color: var(--saffron) !important;
+  }
+  .driver-popover-progress-text {
+    color: var(--fg-dim) !important;
+    font-size: 0.75rem !important;
+  }
 </style>
 </head>
 <body>
@@ -513,6 +569,30 @@
   <!-- ===== Custom cursor ===== -->
   <div class="cursor-dot"></div>
   <div class="cursor-ring"></div>
+
+  <!-- ===== Language Selection Modal ===== -->
+  <div id="lang-modal" class="fixed inset-0 z-[100000] flex items-center justify-center bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500">
+    <div class="bg-stone-900 border border-amber-500/30 rounded-3xl p-8 max-w-sm w-full mx-5 text-center shadow-2xl relative overflow-hidden">
+      <!-- Glow background -->
+      <div class="absolute -top-16 -left-16 w-32 h-32 bg-orange-600/30 rounded-full blur-2xl"></div>
+      <div class="absolute -bottom-16 -right-16 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl"></div>
+      
+      <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center mx-auto mb-6">
+        <i class="fa-solid fa-language text-stone-900 text-2xl"></i>
+      </div>
+      <h3 class="font-display font-black text-2xl text-white mb-2">Select Language</h3>
+      <p class="text-stone-400 text-sm mb-6">મહેરબાની કરીને તમારી ભાષા પસંદ કરો</p>
+      
+      <div class="flex flex-col gap-3">
+        <button onclick="selectLang('en')" class="btn-primary w-full justify-center py-3.5 text-sm font-semibold tracking-wide rounded-xl interactive">
+          <span>English</span>
+        </button>
+        <button onclick="selectLang('gu')" class="w-full py-3.5 text-sm font-semibold border border-amber-500/20 rounded-xl hover:border-amber-400 hover:bg-stone-800 text-amber-300 transition interactive">
+          <span>ગુજરાતી (Gujarati)</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== Navbar ===== -->
   <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
@@ -1744,6 +1824,120 @@
         }
       });
     });
+  </script>
+
+  <!-- ===== Driver.js Tour Library ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+  <script>
+    // ===== Driver.js Tour System =====
+    window.addEventListener('load', () => {
+      // Check if tour is already done
+      if (!localStorage.getItem('jalaram_tour_done')) {
+        setTimeout(() => {
+          const modal = document.getElementById('lang-modal');
+          if (modal) {
+            modal.classList.remove('pointer-events-none');
+            modal.classList.add('opacity-100');
+          }
+        }, 1500); // Trigger shortly after page loader completes
+      }
+    });
+
+    window.selectLang = function(lang) {
+      // Hide language selection modal
+      const modal = document.getElementById('lang-modal');
+      if (modal) {
+        modal.classList.remove('opacity-100');
+        modal.classList.add('pointer-events-none');
+      }
+
+      // Initialize Driver.js
+      const driver = window.driver.js.driver;
+      const driverObj = driver({
+        showProgress: true,
+        allowClose: true,
+        steps: lang === 'gu' ? [
+          {
+            element: '#carousel-tabs',
+            popover: {
+              title: 'વાનગીઓની કેટેગરીઝ',
+              description: 'કેરોયુઝલ વાનગીઓને ફિલ્ટર કરવા માટે અહીં વિવિધ કેટેગરી પર ક્લિક કરો!',
+              side: "bottom",
+              align: 'start'
+            }
+          },
+          {
+            element: '#signature-carousel',
+            popover: {
+              title: 'વાનગીઓ સ્ક્રોલ કરો',
+              description: 'આ સ્વાદિષ્ટ વાનગીઓ બ્રાઉઝ કરવા માટે ડાબે/જમણે સ્વાઇપ કરો અથવા માઉસ વ્હીલનો ઉપયોગ કરો!',
+              side: "bottom",
+              align: 'start'
+            }
+          },
+          {
+            element: '#carousel-prev',
+            popover: {
+              title: 'નેવિગેશન બટનો',
+              description: 'વાનગીઓ જોવા માટે તમે આ ખૂણાના બટનોનો ઉપયોગ પણ કરી શકો છો!',
+              side: "top",
+              align: 'start'
+            }
+          },
+          {
+            element: '#menu-content',
+            popover: {
+              title: 'અમારું આખું મેનૂ',
+              description: 'અમારું સંપૂર્ણ કેટેગરીવાઇઝ મેનૂ જોવા માટે નીચે જાઓ અને મેનૂ સેક્શન્સ પર ક્લિક કરો!',
+              side: "top",
+              align: 'start'
+            }
+          }
+        ] : [
+          {
+            element: '#carousel-tabs',
+            popover: {
+              title: 'Dish Categories',
+              description: 'Click on these tabs to filter the dishes shown in the carousel!',
+              side: "bottom",
+              align: 'start'
+            }
+          },
+          {
+            element: '#signature-carousel',
+            popover: {
+              title: 'Browse Dishes',
+              description: 'Swipe left/right, use your scroll wheel, or drag to browse these delicious dishes!',
+              side: "bottom",
+              align: 'start'
+            }
+          },
+          {
+            element: '#carousel-prev',
+            popover: {
+              title: 'Navigation Buttons',
+              description: 'You can also use these corner buttons to navigate through the dishes!',
+              side: "top",
+              align: 'start'
+            }
+          },
+          {
+            element: '#menu-content',
+            popover: {
+              title: 'Full Menu Sections',
+              description: 'Scroll down and click on different sections to view our complete categorized menu!',
+              side: "top",
+              align: 'start'
+            }
+          }
+        ],
+        onDestroyed: () => {
+          localStorage.setItem('jalaram_tour_done', 'true');
+        }
+      });
+
+      driverObj.drive();
+    };
   </script>
 </body>
 </html>
