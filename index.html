@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jalaram Restaurant — Authentic Flavours of Gujarat, Kathiyawad & Punjab in Rajkot</title>
 <meta name="description" content="Jalaram Restaurant, Rajkot. Authentic Gujarati, Kathiyawadi, Punjabi & street-style fast food, hand-crafted since 2025." />
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="tailwind.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -580,8 +580,8 @@
       <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center mx-auto mb-6">
         <i class="fa-solid fa-language text-stone-900 text-2xl"></i>
       </div>
-      <h3 class="font-display font-black text-2xl text-white mb-2">Select Language</h3>
-      <p class="text-stone-400 text-sm mb-6">મહેરબાની કરીને તમારી ભાષા પસંદ કરો</p>
+      <h2 class="font-display font-black text-2xl text-white mb-2">Select Language</h2>
+      <p class="text-stone-300 text-sm mb-6">મહેરબાની કરીને તમારી ભાષા પસંદ કરો</p>
       
       <div class="flex flex-col gap-3">
         <button onclick="selectLang('en')" class="btn-primary w-full justify-center py-3.5 text-sm font-semibold tracking-wide rounded-xl interactive">
@@ -1189,6 +1189,7 @@
               style="border:0; filter: invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.9);"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
+              title="Google Maps showing Jalaram Restaurant location in Rajkot"
             ></iframe>
             <div class="absolute bottom-4 left-4 right-4 bg-stone-900/95 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-5 flex items-center gap-4">
               <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 grid place-items-center shrink-0">
@@ -1213,9 +1214,9 @@
     <div class="glow w-[600px] h-[600px] bg-orange-700 -top-40 left-1/2 -translate-x-1/2"></div>
     <div class="relative max-w-7xl mx-auto px-5 lg:px-10">
       <div class="text-center mb-20 reveal">
-        <h3 class="font-display font-black leading-[0.9]" style="font-size: clamp(3rem, 10vw, 8rem);">
+        <h2 class="font-display font-black leading-[0.9]" style="font-size: clamp(3rem, 10vw, 8rem);">
           Hungry <span class="italic font-light text-amber-400">already?</span>
-        </h3>
+        </h2>
         <a href="#visit" class="btn-primary interactive mt-8">
           <span>Reserve Your Table</span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -1260,7 +1261,7 @@
           <p class="text-sm text-stone-400 mb-4">Monthly stories, new dishes & festival specials — straight to your inbox.</p>
           <form id="newsletter" class="flex gap-2">
             <input type="email" required placeholder="you@example.com" class="flex-1 bg-stone-900 border border-stone-800 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-amber-500 transition" />
-            <button type="submit" class="btn-primary interactive text-sm py-3 px-5"><i class="fa-solid fa-arrow-right"></i></button>
+            <button type="submit" class="btn-primary interactive text-sm py-3 px-5" aria-label="Subscribe to newsletter"><i class="fa-solid fa-arrow-right"></i></button>
           </form>
           <div id="newsletter-msg" class="text-xs text-amber-400 mt-3 hidden"><i class="fa-solid fa-check"></i> Thank you. You're on the list.</div>
         </div>
