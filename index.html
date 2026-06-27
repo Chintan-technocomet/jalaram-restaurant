@@ -496,8 +496,8 @@
       min-height: 400px;
     }
     .carousel-item {
-      --width: clamp(160px, 35vw, 220px);
-      --height: clamp(220px, 45vw, 300px);
+      --width: clamp(220px, 50vw, 280px);
+      --height: clamp(300px, 70vw, 380px);
     }
   }
 </style>
@@ -788,15 +788,24 @@
         </a>
       </div>
 
+      <!-- Carousel Category Tabs -->
+      <div class="flex flex-wrap gap-3 mb-12 justify-center reveal" id="carousel-tabs">
+        <button class="menu-tab active interactive" data-carousel-tab="gujarati">Gujarati</button>
+        <button class="menu-tab interactive" data-carousel-tab="kathiyawadi">Kathiyawadi</button>
+        <button class="menu-tab interactive" data-carousel-tab="punjabi">Punjabi</button>
+        <button class="menu-tab interactive" data-carousel-tab="fastfood">Fast Food</button>
+        <button class="menu-tab interactive" data-carousel-tab="desserts">Desserts & Drinks</button>
+      </div>
+
       <div class="food-carousel reveal" id="signature-carousel">
         <!-- Dynamically Populated -->
       </div>
 
       <!-- Carousel Navigation Buttons in Corners -->
-      <button id="carousel-prev" class="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-transparent text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Previous dish">
+      <button id="carousel-prev" class="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-stone-900/30 backdrop-blur-md text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Previous dish">
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
-      <button id="carousel-next" class="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-transparent text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Next dish">
+      <button id="carousel-next" class="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-amber-500/20 bg-stone-900/30 backdrop-blur-md text-amber-400 hover:bg-saffron/10 hover:border-saffron transition flex items-center justify-center interactive z-30" aria-label="Next dish">
         <i class="fa-solid fa-arrow-right text-lg"></i>
       </button>
 
@@ -1544,7 +1553,7 @@
 
 
 
-    // ===== Dynamic Food Carousel (Loads all menu items) =====
+    // ===== Dynamic Food Carousel with Categories =====
     const getFoodImage = (name) => {
       const n = name.toLowerCase();
       if (n.includes('thali')) return 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80';
@@ -1559,31 +1568,7 @@
       return 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80';
     };
 
-    const carouselData = [];
-    Object.keys(menuData).forEach(cat => {
-      menuData[cat].forEach(item => {
-        carouselData.push({
-          name: item.name,
-          price: item.price,
-          img: getFoodImage(item.name)
-        });
-      });
-    });
-
-    const carouselContainer = document.getElementById('signature-carousel');
-    if (carouselContainer) {
-      carouselContainer.innerHTML = carouselData.map((item, i) => `
-        <div class="carousel-item" style="--items: ${carouselData.length};">
-          <div class="carousel-box">
-            <div class="carousel-num">${String(i + 1).padStart(2, '0')}</div>
-            <div class="carousel-title">${item.name}</div>
-            <div class="carousel-price">₹${item.price}</div>
-            <img src="${item.img}" alt="${item.name}" loading="lazy" />
-          </div>
-        </div>
-      `).join('');
-    }
-
+    let carouselItems = [];
     let carouselProgress = 50;
     let carouselStartX = 0;
     let carouselActive = 0;
@@ -1591,8 +1576,6 @@
 
     const carouselSpeedWheel = 0.03;
     const carouselSpeedDrag = -0.15;
-
-    const carouselItems = document.querySelectorAll('.carousel-item');
     const carouselCursors = document.querySelectorAll('.carousel-cursor');
 
     const getZindex = (array, index) => (array.map((_, i) => (index === i) ? array.length : array.length - Math.abs(index - i)));
@@ -1615,12 +1598,44 @@
       
       carouselItems.forEach((item, index) => displayCarouselItem(item, index, carouselActive));
     };
-    animateCarousel();
 
-    carouselItems.forEach((item, i) => {
-      item.addEventListener('click', () => {
-        carouselProgress = (i / carouselItems.length) * 100 + 15;
-        animateCarousel();
+    function initCarousel(category) {
+      const itemsData = menuData[category] || [];
+      const carouselContainer = document.getElementById('signature-carousel');
+      if (!carouselContainer) return;
+
+      carouselContainer.innerHTML = itemsData.map((item, i) => `
+        <div class="carousel-item" style="--items: ${itemsData.length};">
+          <div class="carousel-box">
+            <div class="carousel-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="carousel-title">${item.name}</div>
+            <div class="carousel-price">₹${item.price}</div>
+            <img src="${getFoodImage(item.name)}" alt="${item.name}" loading="lazy" />
+          </div>
+        </div>
+      `).join('');
+
+      carouselItems = document.querySelectorAll('.carousel-item');
+      carouselProgress = 50;
+      animateCarousel();
+
+      carouselItems.forEach((item, i) => {
+        item.addEventListener('click', () => {
+          carouselProgress = (i / carouselItems.length) * 100 + 15;
+          animateCarousel();
+        });
+      });
+    }
+
+    // Initialize with Gujarati
+    initCarousel('gujarati');
+
+    // Tab switcher for Carousel
+    document.querySelectorAll('[data-carousel-tab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('[data-carousel-tab]').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        initCarousel(tab.dataset.carouselTab);
       });
     });
 
@@ -1668,12 +1683,13 @@
     const prevBtn = document.getElementById('carousel-prev');
     const nextBtn = document.getElementById('carousel-next');
     if (prevBtn && nextBtn) {
-      const step = 100 / (carouselItems.length - 1);
       prevBtn.addEventListener('click', () => {
+        const step = 100 / (carouselItems.length - 1);
         carouselProgress = Math.max(0, carouselProgress - step);
         animateCarousel();
       });
       nextBtn.addEventListener('click', () => {
+        const step = 100 / (carouselItems.length - 1);
         carouselProgress = Math.min(100, carouselProgress + step);
         animateCarousel();
       });
